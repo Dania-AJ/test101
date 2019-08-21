@@ -12,10 +12,19 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    //I used Mooskine app provided by Udacity to know how to inject the dataController in the initial view and when to save data
+    let dataController = DataController ("VirtualTouristModel")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        //Once the app launches, load the persistent store
+        dataController.loadPersistentStore()
+        
+        //Pass inject the dataController object to MapViewController
+        let navigationController = window?.rootViewController as! UINavigationController
+        let mapViewController = navigationController.topViewController as! MapViewController
+        mapViewController.dataController = dataController
+        
         return true
     }
 
@@ -27,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        saveContext()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -39,8 +49,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        saveContext()
     }
 
+    func saveContext () {
+        try? dataController.viewContext.save()
+    }
 
 }
 
